@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ author.fullName }}{% endblock %}
+
+{% block body %}
+    <nav class="breadcrumbs" aria-label="Навігаційний ланцюжок">
+        <a href="{{ path('app_author_index') }}">Автори</a>
+        <span>/</span>
+        <span>{{ author.fullName }}</span>
+    </nav>
+
+    <article class="detail-card">
+        <h1>{{ author.fullName }}</h1>
+        <p class="detail-author">
+            Країна: <strong>{{ author.country }}</strong>
+            {% if author.birthYear %} &bull; Рік народження: <strong>{{ author.birthYear }}</strong>{% endif %}
+        </p>
+
+        {% if author.biography %}
+            <section class="detail-section">
+                <h2>Біографія</h2>
+                <p class="description-text">{{ author.biography }}</p>
+            </section>
+        {% endif %}
+
+        <section class="detail-section">
+            <h2>Книги автора у каталозі ({{ author.books|length }})</h2>
+
+            {% if author.books is empty %}
+                <p class="subtitle">У каталозі ще немає книг цього автора.</p>
+            {% else %}
+                <div class="cards-grid">
+                    {% for book in author.books %}
+                        <div class="book-card">
+                            <div class="book-card-top">
+                                <span class="badge badge-genre">{{ book.genre }}</span>
+                                {% if book.available %}
+                                    <span class="badge badge-ok">В наявності: {{ book.availableCopies }}</span>
+                                {% else %}
+                                    <span class="badge badge-out">Немає</span>
+                                {% endif %}
+                            </div>
+                            <h3 class="book-title">
+                                <a href="{{ path('app_book_show', { id: book.id }) }}">{{ book.title }}</a>
+                            </h3>
+                            <div class="book-meta">
+                                <span>{{ book.publishedYear }} р.</span>
+                                <span>{{ book.pages }} стор.</span>
+                            </div>
+                            <div class="book-card-footer">
+                                <a href="{{ path('app_book_show', { id: book.id }) }}" class="btn btn-outline">Переглянути &rarr;</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        <div class="detail-actions">
+            <a href="{{ path('app_author_index') }}" class="btn btn-secondary">&larr; До списку авторів</a>
+            <a href="{{ path('app_book_index', { author: author.id }) }}" class="btn btn-outline">Фільтрувати в каталозі</a>
+        </div>
+    </article>
+{% endblock %}

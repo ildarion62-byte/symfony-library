@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block body %}
+    <nav class="breadcrumbs" aria-label="Навігаційний ланцюжок">
+        <a href="{{ path('app_book_index') }}">Каталог книг</a>
+        <span>/</span>
+        <span>{{ book.title }}</span>
+    </nav>
+
+    <article class="detail-card">
+        <div class="detail-header">
+            <div>
+                <div class="book-card-top">
+                    <span class="badge badge-genre">{{ book.genre }}</span>
+                    {% if book.available %}
+                        <span class="badge badge-ok">Доступно примірників: {{ book.availableCopies }}</span>
+                    {% else %}
+                        <span class="badge badge-out">Тимчасово відсутня</span>
+                    {% endif %}
+                </div>
+                <h1>{{ book.title }}</h1>
+                <p class="detail-author">
+                    Автор:
+                    <a href="{{ path('app_author_show', { id: book.author.id }) }}">
+                        {{ book.author.fullName }}
+                    </a>
+                    ({{ book.author.country }}{% if book.author.birthYear %}, нар. {{ book.author.birthYear }}{% endif %})
+                </p>
+            </div>
+        </div>
+
+        <dl class="specs-grid">
+            <div class="spec-item">
+                <dt>ISBN</dt>
+                <dd><code>{{ book.isbn }}</code></dd>
+            </div>
+            <div class="spec-item">
+                <dt>Рік видання</dt>
+                <dd>{{ book.publishedYear }}</dd>
+            </div>
+            <div class="spec-item">
+                <dt>Кількість сторінок</dt>
+                <dd>{{ book.pages }}</dd>
+            </div>
+            <div class="spec-item">
+                <dt>Жанр</dt>
+                <dd>{{ book.genre }}</dd>
+            </div>
+        </dl>
+
+        {% if book.description %}
+            <section class="detail-section">
+                <h2>Анотація</h2>
+                <p class="description-text">{{ book.description }}</p>
+            </section>
+        {% endif %}
+
+        {% if book.author.biography %}
+            <section class="detail-section">
+                <h2>Про автора</h2>
+                <p class="description-text">{{ book.author.biography }}</p>
+            </section>
+        {% endif %}
+
+        <div class="detail-actions">
+            <a href="{{ path('app_book_index') }}" class="btn btn-secondary">&larr; Назад до каталогу</a>
+            <a href="{{ path('app_author_show', { id: book.author.id }) }}" class="btn btn-outline">Усі книги автора</a>
+            <a href="/api/books/{{ book.id }}" class="btn btn-outline" target="_blank" rel="noopener">JSON цієї книги</a>
+        </div>
+    </article>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Автори{% endblock %}
+
+{% block body %}
+    <section class="page-head">
+        <div>
+            <h1>Автори бібліотеки</h1>
+            <p class="subtitle">Перелік авторів та кількість їхніх видань у фонді</p>
+        </div>
+        <div class="stat-pill">Всього авторів: <strong>{{ authorsWithCount|length }}</strong></div>
+    </section>
+
+    {% if authorsWithCount is empty %}
+        <div class="empty-state">
+            <h2>Список авторів порожній</h2>
+            <p>Додайте авторів через адмін-панель або виконайте консольну команду заповнення.</p>
+        </div>
+    {% else %}
+        <div class="cards-grid">
+            {% for row in authorsWithCount %}
+                {% set author = row.author %}
+                <article class="book-card">
+                    <div class="book-card-top">
+                        <span class="badge badge-genre">{{ author.country }}</span>
+                        <span class="badge badge-ok">Книг: {{ row.bookCount }}</span>
+                    </div>
+
+                    <h2 class="book-title">
+                        <a href="{{ path('app_author_show', { id: author.id }) }}">{{ author.fullName }}</a>
+                    </h2>
+
+                    {% if author.birthYear %}
+                        <p class="book-meta"><span>Рік народження: {{ author.birthYear }}</span></p>
+                    {% endif %}
+
+                    {% if author.biography %}
+                        <p class="book-excerpt">
+                            {{ author.biography|length > 140 ? author.biography|slice(0, 140) ~ '…' : author.biography }}
+                        </p>
+                    {% endif %}
+
+                    <div class="book-card-footer">
+                        <a href="{{ path('app_author_show', { id: author.id }) }}" class="btn btn-outline">Книги автора &rarr;</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

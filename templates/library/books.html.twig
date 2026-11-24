@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Каталог книг{% endblock %}
+
+{% block body %}
+    <section class="page-head">
+        <div>
+            <h1>Каталог книг</h1>
+            <p class="subtitle">Пошук, фільтрація за жанром, автором та наявністю примірників (Doctrine QueryBuilder)</p>
+        </div>
+        <div class="stat-pill">Знайдено книг: <strong>{{ books|length }}</strong></div>
+    </section>
+
+    <form method="get" action="{{ path('app_book_index') }}" class="filter-card">
+        <div class="filter-grid">
+            <div class="field">
+                <label for="q">Пошук (назва, автор, ISBN, жанр)</label>
+                <input
+                    type="text"
+                    id="q"
+                    name="q"
+                    value="{{ filters.q }}"
+                    placeholder="Наприклад: Кобзар, Шевченко, 978..."
+                >
+            </div>
+
+            <div class="field">
+                <label for="genre">Жанр</label>
+                <select id="genre" name="genre">
+                    <option value="">Усі жанри</option>
+                    {% for genreName in genres %}
+                        <option value="{{ genreName }}" {{ filters.genre == genreName ? 'selected' : '' }}>
+                            {{ genreName }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="author">Автор</label>
+                <select id="author" name="author">
+                    <option value="">Усі автори</option>
+                    {% for authorItem in authors %}
+                        <option value="{{ authorItem.id }}" {{ filters.author == authorItem.id ? 'selected' : '' }}>
+                            {{ authorItem.fullName }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="sort">Сортування</label>
+                <select id="sort" name="sort">
+                    <option value="title" {{ filters.sort == 'title' ? 'selected' : '' }}>За назвою (А–Я)</option>
+                    <option value="author" {{ filters.sort == 'author' ? 'selected' : '' }}>За автором</option>
+                    <option value="year_desc" {{ filters.sort == 'year_desc' ? 'selected' : '' }}>Спочатку новіші</option>
+                    <option value="year_asc" {{ filters.sort == 'year_asc' ? 'selected' : '' }}>Спочатку старіші</option>
+                    <option value="pages_desc" {{ filters.sort == 'pages_desc' ? 'selected' : '' }}>За кількістю сторінок</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="filter-actions">
+            <label class="checkbox-label">
+                <input type="checkbox" name="available" value="1" {{ filters.available ? 'checked' : '' }}>
+                Лише доступні в бібліотеці
+            </label>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Застосувати</button>
+                <a href="{{ path('app_book_index') }}" class="btn btn-secondary">Скинути</a>
+            </div>
+        </div>
+    </form>
+
+    {% if books is empty %}
+        <div class="empty-state">
+            <h2>Книг за вашим запитом не знайдено</h2>
+            <p>Спробуйте змінити параметри пошуку або скинути фільтри.</p>
+            <a href="{{ path('app_book_index') }}" class="btn btn-primary">Показати весь каталог</a>
+        </div>
+    {% else %}
+        <div class="cards-grid">
+            {% for book in books %}
+                <article class="book-card">
+                    <div class="book-card-top">
+                        <span class="badge badge-genre">{{ book.genre }}</span>
+                        {% if book.available %}
+                            <span class="badge badge-ok">В наявності: {{ book.availableCopies }}</span>
+                        {% else %}
+                            <span class="badge badge-out">Немає в наявності</span>
+                        {% endif %}
+                    </div>
+
+                    <h2 class="book-title">
+                        <a href="{{ path('app_book_show', { id: book.id }) }}">{{ book.title }}</a>
+                    </h2>
+
+                    <p class="book-author">
+                        Автор:
+                        <a href="{{ path('app_author_show', { id: book.author.id }) }}">{{ book.author.fullName }}</a>
+                    </p>
+
+                    <div class="book-meta">
+                        <span>Рік: {{ book.publishedYear }}</span>
+                        <span>{{ book.pages }} стор.</span>
+                    </div>
+
+                    {% if book.description %}
+                        <p class="book-excerpt">
+                            {{ book.description|length > 130 ? book.description|slice(0, 130) ~ '…' : book.description }}
+                        </p>
+                    {% endif %}
+
+                    <div class="book-card-footer">
+                        <a href="{{ path('app_book_show', { id: book.id }) }}" class="btn btn-outline">Детальніше &rarr;</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
