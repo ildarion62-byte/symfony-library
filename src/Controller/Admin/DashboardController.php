@@ -2,8 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Author;
-use App\Entity\Book;
 use App\Repository\AuthorRepository;
 use App\Repository\BookRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
@@ -48,8 +46,8 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Головна', 'fa fa-home');
         yield MenuItem::section('Каталог');
-        yield MenuItem::linkToCrud('Книги', 'fa fa-book', Book::class);
-        yield MenuItem::linkToCrud('Автори', 'fa fa-user-pen', Author::class);
+        yield MenuItem::linkTo(BookCrudController::class, 'Книги', 'fa fa-book');
+        yield MenuItem::linkTo(AuthorCrudController::class, 'Автори', 'fa fa-user-pen');
         yield MenuItem::section('Навігація');
         yield MenuItem::linkToRoute('Публічний сайт', 'fa fa-globe', 'app_home');
         yield MenuItem::linkToLogout('Вийти', 'fa fa-right-from-bracket');
